@@ -1,0 +1,52 @@
+name: mindly_flutter
+description: Clone Flutter do app Mindly — plataforma de estudos para neurodiversidade.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Roteamento declarativo (equivale ao react-router-dom)
+  go_router: ^14.2.0
+
+  # Gerenciamento de estado (equivale ao Context API + useAuth)
+  provider: ^6.1.2
+
+  # Backend Supabase (equivale ao supabase-js)
+  supabase_flutter: ^2.5.6
+
+  # Fontes Capriola + Open Sans (equivale ao Google Fonts import no CSS)
+  google_fonts: ^6.2.1
+
+  # Ícones Lucide (equivale à lib/icons.jsx com lucide-react)
+  lucide_icons: 0.257.0
+
+  # Formatação de datas em pt-BR (equivale ao toLocaleDateString)
+  intl: ^0.19.0
+
+  # Carregamento de avatares via URL externa com cache
+  cached_network_image: ^3.3.1
+
+  # Text-to-speech para LearningPath (equivale ao SpeechSynthesisUtterance)
+  flutter_tts: ^4.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/mindly-logo.png
+    - assets/images/home.jpg
+    - assets/images/banners.png
+    - assets/images/lapismindly.png
+    - assets/images/iconegrafico.png
+    - assets/images/iconeplanner.png
+    - assets/images/iconetrofeu.png
