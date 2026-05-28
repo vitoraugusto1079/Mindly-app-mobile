@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/responsive.dart';
 import '../../data/models/planner_block.dart';
 import '../../data/services/planner_service.dart';
 import '../../providers/auth_provider.dart';
@@ -194,202 +195,209 @@ class _PlannerPageState extends State<PlannerPage> {
                   ],
                 ),
                 padding: const EdgeInsets.all(30),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // CALENDÁRIO
-                    SizedBox(
-                      width: 240,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              _NavBtn(
-                                  icon: Icons.chevron_left,
-                                  onTap: () => setState(() => _currentDate =
-                                      DateTime(_currentDate.year,
-                                          _currentDate.month - 1))),
-                              Expanded(
-                                child: Text(
-                                  '${_monthNames[_currentDate.month - 1]} ${_currentDate.year}',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.capriola(
-                                      fontSize: 14, color: AppColors.navy),
-                                ),
-                              ),
-                              _NavBtn(
-                                  icon: Icons.chevron_right,
-                                  onTap: () => setState(() => _currentDate =
-                                      DateTime(_currentDate.year,
-                                          _currentDate.month + 1))),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: _dayNames
-                                .map((d) => SizedBox(
-                                    width: 28,
-                                    child: Text(d,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.graySoft))))
-                                .toList(),
-                          ),
-                          const SizedBox(height: 6),
-                          GridView.count(
-                            crossAxisCount: 7,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            mainAxisSpacing: 6,
-                            crossAxisSpacing: 6,
-                            children: cells.map((day) {
-                              if (day == null) return const SizedBox();
-                              final key = _formatDateKey(DateTime(
-                                  _currentDate.year, _currentDate.month, day));
-                              final isSelected = key == selectedKey;
-                              final isToday = key == todayKey;
-                              final hasSchedule =
-                                  _blocks.any((b) => b.date == key);
-                              return GestureDetector(
-                                onTap: () => setState(() => _selectedDate =
+                child: LayoutBuilder(builder: (_, constraints) {
+                  final narrow = constraints.maxWidth < kMobileBreak;
+
+                  final calendarWidget = SizedBox(
+                    width: narrow ? double.infinity : 240,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            _NavBtn(
+                                icon: Icons.chevron_left,
+                                onTap: () => setState(() => _currentDate =
                                     DateTime(_currentDate.year,
-                                        _currentDate.month, day)),
-                                child: Container(
-                                  decoration: BoxDecoration(
+                                        _currentDate.month - 1))),
+                            Expanded(
+                              child: Text(
+                                '${_monthNames[_currentDate.month - 1]} ${_currentDate.year}',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.capriola(
+                                    fontSize: 14, color: AppColors.navy),
+                              ),
+                            ),
+                            _NavBtn(
+                                icon: Icons.chevron_right,
+                                onTap: () => setState(() => _currentDate =
+                                    DateTime(_currentDate.year,
+                                        _currentDate.month + 1))),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: _dayNames
+                              .map((d) => SizedBox(
+                                  width: 28,
+                                  child: Text(d,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.graySoft))))
+                              .toList(),
+                        ),
+                        const SizedBox(height: 6),
+                        GridView.count(
+                          crossAxisCount: 7,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: 6,
+                          crossAxisSpacing: 6,
+                          children: cells.map((day) {
+                            if (day == null) return const SizedBox();
+                            final key = _formatDateKey(DateTime(
+                                _currentDate.year, _currentDate.month, day));
+                            final isSelected = key == selectedKey;
+                            final isToday = key == todayKey;
+                            final hasSchedule =
+                                _blocks.any((b) => b.date == key);
+                            return GestureDetector(
+                              onTap: () => setState(() => _selectedDate =
+                                  DateTime(_currentDate.year,
+                                      _currentDate.month, day)),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.blue
+                                      : isToday
+                                          ? const Color(0xFFE3F2FD)
+                                          : hasSchedule
+                                              ? const Color(0xFFFFFBF5)
+                                              : Colors.white,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
                                     color: isSelected
-                                        ? AppColors.blue
+                                        ? AppColors.blueDark
                                         : isToday
-                                            ? const Color(0xFFE3F2FD)
+                                            ? AppColors.blue
                                             : hasSchedule
-                                                ? const Color(0xFFFFFBF5)
-                                                : Colors.white,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
+                                                ? AppColors.orange
+                                                : const Color(0xFFE8E8E8),
+                                    width: hasSchedule && !isSelected ? 3 : 2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$day',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
                                       color: isSelected
-                                          ? AppColors.blueDark
+                                          ? Colors.white
                                           : isToday
                                               ? AppColors.blue
-                                              : hasSchedule
-                                                  ? AppColors.orange
-                                                  : const Color(0xFFE8E8E8),
-                                      width: hasSchedule && !isSelected ? 3 : 2,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '$day',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : isToday
-                                                ? AppColors.blue
-                                                : const Color(0xFF888888),
-                                      ),
+                                              : const Color(0xFF888888),
                                     ),
                                   ),
                                 ),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 30),
+                  );
 
-                    // HORÁRIOS DO DIA
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  final scheduleWidget = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: AppColors.orange, width: 3)),
+                        ),
+                        child: Text(
+                          _selectedDate.toLocal().toString().split(' ')[0],
+                          style: GoogleFonts.capriola(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.navy),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_loading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (_todaySchedule.isEmpty)
+                        const Text('Nenhum horário cadastrado neste dia.',
+                            style: TextStyle(
+                                color: AppColors.graySoft,
+                                fontStyle: FontStyle.italic))
+                      else
+                        ..._todaySchedule.map((item) => _ScheduleItem(
+                              block: item,
+                              color: _parseColor(item.color),
+                              onEdit: () {
+                                _timeCtrl.text = item.time;
+                                _subjectCtrl.text = item.subject;
+                                _selectedColor = _parseColor(item.color);
+                                setState(() {
+                                  _editing = item;
+                                  _showAddModal = true;
+                                });
+                              },
+                              onDelete: () => _handleDelete(item),
+                            )),
+                      const SizedBox(height: 20),
+                      Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: AppColors.orange, width: 3)),
-                            ),
-                            child: Text(
-                              _selectedDate
-                                  .toLocal()
-                                  .toString()
-                                  .split(' ')[0],
-                              style: GoogleFonts.capriola(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.navy),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () =>
+                                  setState(() => _showAddModal = true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.blue,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: const Text('+ adicionar horário'),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          if (_loading)
-                            const Center(child: CircularProgressIndicator())
-                          else if (_todaySchedule.isEmpty)
-                            const Text('Nenhum horário cadastrado neste dia.',
-                                style: TextStyle(
-                                    color: AppColors.graySoft,
-                                    fontStyle: FontStyle.italic))
-                          else
-                            ..._todaySchedule.map((item) => _ScheduleItem(
-                                  block: item,
-                                  color: _parseColor(item.color),
-                                  onEdit: () {
-                                    _timeCtrl.text = item.time;
-                                    _subjectCtrl.text = item.subject;
-                                    _selectedColor = _parseColor(item.color);
-                                    setState(() {
-                                      _editing = item;
-                                      _showAddModal = true;
-                                    });
-                                  },
-                                  onDelete: () => _handleDelete(item),
-                                )),
-                          const SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      setState(() => _showAddModal = true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.blue,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8)),
-                                  ),
-                                  child: const Text('+ adicionar horário'),
-                                ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () =>
+                                  setState(() => _showPauseModal = true),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.blue,
+                                side: const BorderSide(
+                                    color: AppColors.blue, width: 2),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () =>
-                                      setState(() => _showPauseModal = true),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.blue,
-                                    side: const BorderSide(
-                                        color: AppColors.blue, width: 2),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8)),
-                                  ),
-                                  child: const Text('Fazer pausa'),
-                                ),
-                              ),
-                            ],
+                              child: const Text('Fazer pausa'),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+
+                  return narrow
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            calendarWidget,
+                            const SizedBox(height: 24),
+                            scheduleWidget,
+                          ],
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            calendarWidget,
+                            const SizedBox(width: 30),
+                            Expanded(child: scheduleWidget),
+                          ],
+                        );
+                }),
               ),
             ],
           ),
