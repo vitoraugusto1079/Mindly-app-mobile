@@ -6,9 +6,9 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'providers/auth_provider.dart';
 
-// Substitua pelos valores do seu projeto Supabase (.env.example)
-const _supabaseUrl = 'YOUR_SUPABASE_URL';
-const _supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+const _supabaseUrl = 'https://knkfkzskfwsiayzfdvia.supabase.co';
+const _supabaseAnonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtua2ZrenNrZndzaWF5emZkdmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTc4MDAsImV4cCI6MjA5NTI5MzgwMH0.SJudevWWar41NEs2VW0Z_GDUc8DkqBPCZVgVHw-nBIA';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
