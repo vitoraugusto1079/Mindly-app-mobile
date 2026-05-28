@@ -59,7 +59,12 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    await _service.signIn(email: email, password: password);
+    final response = await _service.signIn(email: email, password: password);
+    _session = response.session;
+    if (_session?.user != null) {
+      await _loadProfile(_session!.user.id);
+    }
+    notifyListeners();
   }
 
   Future<void> loginWithGoogle() async {
