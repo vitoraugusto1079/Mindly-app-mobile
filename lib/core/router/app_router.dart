@@ -41,6 +41,19 @@ class _RootShell extends StatelessWidget {
   }
 }
 
+/// Fade suave de 250ms entre páginas dentro do ShellRoute.
+Page<void> _fadePage(GoRouterState state, Widget child) =>
+    CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 250),
+      reverseTransitionDuration: const Duration(milliseconds: 200),
+      transitionsBuilder: (_, animation, __, child) => FadeTransition(
+        opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+        child: child,
+      ),
+    );
+
 GoRouter buildRouter(BuildContext context) {
   return GoRouter(
     initialLocation: '/',
@@ -65,28 +78,60 @@ GoRouter buildRouter(BuildContext context) {
           ),
         ),
         routes: [
-          GoRoute(path: '/', builder: (_, __) => const HomePage()),
-          GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-          GoRoute(path: '/cadastro', builder: (_, __) => const RegisterPage()),
-          GoRoute(path: '/planner', builder: (_, __) => const PlannerPage()),
           GoRoute(
-              path: '/desempenho',
-              builder: (_, __) => const PerformancePage()),
+            path: '/',
+            pageBuilder: (_, state) => _fadePage(state, const HomePage()),
+          ),
           GoRoute(
-              path: '/desafios',
-              builder: (_, __) => const ChallengesPage()),
+            path: '/login',
+            pageBuilder: (_, state) => _fadePage(state, const LoginPage()),
+          ),
           GoRoute(
-              path: '/trilha',
-              builder: (_, __) => const LearningPathPage()),
-          GoRoute(path: '/perfil', builder: (ctx, __) {
-            final auth = ctx.read<AuthProvider>();
-            return auth.isAdmin ? const AdminPage() : const ProfilePage();
-          }),
+            path: '/cadastro',
+            pageBuilder: (_, state) => _fadePage(state, const RegisterPage()),
+          ),
           GoRoute(
-              path: '/editar-perfil',
-              builder: (_, __) => const EditProfilePage()),
-          GoRoute(path: '/admin', builder: (_, __) => const AdminPage()),
-          GoRoute(path: '/:any', builder: (_, __) => const NotFoundPage()),
+            path: '/planner',
+            pageBuilder: (_, state) => _fadePage(state, const PlannerPage()),
+          ),
+          GoRoute(
+            path: '/desempenho',
+            pageBuilder: (_, state) =>
+                _fadePage(state, const PerformancePage()),
+          ),
+          GoRoute(
+            path: '/desafios',
+            pageBuilder: (_, state) =>
+                _fadePage(state, const ChallengesPage()),
+          ),
+          GoRoute(
+            path: '/trilha',
+            pageBuilder: (_, state) =>
+                _fadePage(state, const LearningPathPage()),
+          ),
+          GoRoute(
+            path: '/perfil',
+            pageBuilder: (ctx, state) {
+              final auth = ctx.read<AuthProvider>();
+              return _fadePage(
+                state,
+                auth.isAdmin ? const AdminPage() : const ProfilePage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/editar-perfil',
+            pageBuilder: (_, state) =>
+                _fadePage(state, const EditProfilePage()),
+          ),
+          GoRoute(
+            path: '/admin',
+            pageBuilder: (_, state) => _fadePage(state, const AdminPage()),
+          ),
+          GoRoute(
+            path: '/:any',
+            pageBuilder: (_, state) => _fadePage(state, const NotFoundPage()),
+          ),
         ],
       ),
     ],

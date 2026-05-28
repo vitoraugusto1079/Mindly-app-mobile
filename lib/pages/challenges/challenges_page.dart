@@ -7,6 +7,7 @@ import '../../data/models/user_challenge.dart';
 import '../../data/models/game.dart';
 import '../../data/services/challenges_service.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/common/skeleton.dart';
 
 class ChallengesPage extends StatefulWidget {
   const ChallengesPage({super.key});
@@ -110,8 +111,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
               _ChallengesSection(
                 title: 'Desafios em andamento',
                 child: _loading
-                    ? const Text('Carregando…',
-                        style: TextStyle(color: AppColors.graySoft))
+                    ? const SkeletonChallenges()
                     : _ongoing.isEmpty
                         ? const Text(
                             'Nenhum desafio em andamento. Bom trabalho! 🎉',

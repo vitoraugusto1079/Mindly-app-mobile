@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/responsive.dart';
 import '../../data/models/planner_block.dart';
+import '../../widgets/common/skeleton.dart';
 import '../../data/services/planner_service.dart';
 import '../../providers/auth_provider.dart';
 
@@ -320,7 +321,7 @@ class _PlannerPageState extends State<PlannerPage> {
                       ),
                       const SizedBox(height: 16),
                       if (_loading)
-                        const Center(child: CircularProgressIndicator())
+                        const SkeletonSchedule()
                       else if (_todaySchedule.isEmpty)
                         const Text('Nenhum horário cadastrado neste dia.',
                             style: TextStyle(

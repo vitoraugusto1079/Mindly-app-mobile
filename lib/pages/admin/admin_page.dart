@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/responsive.dart';
+import '../../widgets/common/skeleton.dart';
 import '../../data/models/user_model.dart';
 import '../../data/models/plan.dart';
 import '../../data/models/challenge.dart';
@@ -155,7 +156,7 @@ class _AdminPageState extends State<AdminPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(32),
                         child: _loading
-                            ? const Center(child: CircularProgressIndicator())
+                            ? const SkeletonAdminPanel()
                             : _buildPanel(),
                       ),
                     ),

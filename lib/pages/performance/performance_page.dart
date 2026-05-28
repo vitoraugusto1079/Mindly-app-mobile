@@ -9,6 +9,7 @@ import '../../data/services/progress_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/rewards_panel.dart';
 import '../../widgets/common/loading_spinner.dart';
+import '../../widgets/common/skeleton.dart';
 
 class PerformancePage extends StatefulWidget {
   const PerformancePage({super.key});
@@ -59,7 +60,7 @@ class _PerformancePageState extends State<PerformancePage> {
           _SectionTitle(label: 'Conquistas'),
           const SizedBox(height: 20),
           _loading
-              ? const LoadingSpinner()
+              ? const SkeletonAchievements()
               : Wrap(
                   spacing: 20,
                   runSpacing: 20,
@@ -118,7 +119,9 @@ class _PerformancePageState extends State<PerformancePage> {
                       style: GoogleFonts.capriola(
                           fontSize: 16, color: AppColors.navy)),
                   const SizedBox(height: 16),
-                  if (_subjects.isEmpty)
+                  if (_loading)
+                    const SkeletonSubjects()
+                  else if (_subjects.isEmpty)
                     const Text(
                       'Estude e conclua desafios para ver seu progresso aqui.',
                       style: TextStyle(
