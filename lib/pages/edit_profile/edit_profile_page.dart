@@ -19,7 +19,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _usernameCtrl;
   late TextEditingController _photoCtrl;
   late TextEditingController _bioCtrl;
-  late TextEditingController _birthCtrl;
+  DateTime? _birthDate;
   bool _saving = false;
   String _error = '';
 
@@ -31,7 +31,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _usernameCtrl = TextEditingController(text: user?.username ?? '');
     _photoCtrl = TextEditingController(text: user?.photo ?? '');
     _bioCtrl = TextEditingController(text: user?.bio ?? '');
-    _birthCtrl = TextEditingController(text: user?.birth ?? '');
+    // Carrega a data salva no perfil (formato yyyy-MM-dd)
+    if (user?.birth != null && user!.birth!.isNotEmpty) {
+      try {
+        _birthDate = DateTime.parse(user.birth!);
+      } catch (_) {}
+    }
   }
 
   @override
@@ -40,8 +45,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _usernameCtrl.dispose();
     _photoCtrl.dispose();
     _bioCtrl.dispose();
-    _birthCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _birthDate ?? DateTime(2000),
+      firstDate: DateTime(1920),
+      lastDate: DateTime.now(),
+      helpText: 'Data de nascimento',
+      cancelText: 'Cancelar',
+      confirmText: 'Confirmar',
+    );
+    if (picked != null) setState(() => _birthDate = picked);
   }
 
   Future<void> _handleSave() async {
@@ -55,7 +72,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'username': _usernameCtrl.text,
         'photo': _photoCtrl.text.isNotEmpty ? _photoCtrl.text : null,
         'bio': _bioCtrl.text,
-        'birth': _birthCtrl.text.isNotEmpty ? _birthCtrl.text : null,
+        'birth': _birthDate != null
+            ? '${_birthDate!.year}-${_birthDate!.month.toString().padLeft(2, '0')}-${_birthDate!.day.toString().padLeft(2, '0')}'
+            : null,
       });
       if (mounted) context.go('/perfil');
     } catch (e) {
@@ -142,8 +161,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       const SizedBox(height: 16),
                       _Field(label: 'Bio', controller: _bioCtrl, maxLines: 3,
                           hint: 'Fale um pouco sobre você...'),
-                      _Field(label: 'Data de nascimento', controller: _birthCtrl,
-                          hint: 'yyyy-MM-dd'),
+                      _DatePickerField(
+                          birthDate: _birthDate, onTap: _pickDate),
                       const SizedBox(height: 20),
                       Row(
                         children: [
@@ -238,10 +257,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           controller: _bioCtrl,
                           maxLines: 3,
                           hint: 'Fale um pouco sobre você...'),
-                      _Field(
-                          label: 'Data de nascimento',
-                          controller: _birthCtrl,
-                          hint: 'yyyy-MM-dd'),
+                      _DatePickerField(
+                          birthDate: _birthDate, onTap: _pickDate),
                       const SizedBox(height: 20),
 
                       Row(
@@ -269,6 +286,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DatePickerField extends StatelessWidget {
+  final DateTime? birthDate;
+  final VoidCallback onTap;
+  const _DatePickerField({required this.birthDate, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = birthDate != null
+        ? '${birthDate!.day.toString().padLeft(2, '0')}/${birthDate!.month.toString().padLeft(2, '0')}/${birthDate!.year}'
+        : 'Selecionar data';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(4),
+        child: InputDecorator(
+          decoration: const InputDecoration(
+            labelText: 'Data de nascimento',
+            border: OutlineInputBorder(),
+            suffixIcon: Icon(Icons.calendar_today, size: 18),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              color: birthDate != null ? Colors.black87 : Colors.grey,
+            ),
+          ),
+        ),
       ),
     );
   }
